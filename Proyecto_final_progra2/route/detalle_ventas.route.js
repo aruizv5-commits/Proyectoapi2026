@@ -6,7 +6,7 @@ module.exports = app => {
     
     router.get("/", detalle_ventas.findAll);
     
-    router.get("/status", detalle_ventas.findAllStatus);
+   
 
     router.get("/:id", detalle_ventas.findOne);
    

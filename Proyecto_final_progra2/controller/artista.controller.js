@@ -72,7 +72,7 @@ exports.update = (req, res) => {
     const id = req.params.id_artista;
 
     Artista.update(req.body, {
-        where: { id: id }
+        where: { id_artista: id }
     })
         .then(num => {
             if (num == 1) {
@@ -94,10 +94,10 @@ exports.update = (req, res) => {
 
 // Delete a Client with the specified id in the request
 exports.delete = (req, res) => {
-    const id = req.params.id_artista;
+    const id = req.params.id;
     // utilizamos el metodo destroy para eliminar el objeto mandamos la condicionante where id = parametro que recibimos 
     Artista.destroy({
-        where: { id: id }
+        where: { id_artista: id }
     })
         .then(num => {
             if (num == 1) {
@@ -134,16 +134,3 @@ exports.deleteAll = (req, res) => {
         });
 };
 
-// find all active Client, basado en el atributo status vamos a buscar que solo los Artistas activos
-exports.findAllStatus = (req, res) => {
-    Artista.findAll({ where: { status: true } })
-        .then(data => {
-            res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving Client."
-            });
-        }); 
-};

@@ -4,16 +4,43 @@ const Detalle_ventas = db.d_ventas;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Client
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
     // Validamos que dentro del  request no venga vacio el nombre, de lo contrario returna error
-    if (!req.body.nombre) {
+    if (!req.body.id_detalle) {
         res.status(400).send({
             message: "Content can not be empty!"
         });
         return;
     }
 
-    // Create a Client, definiendo una variable con la estructura del reques para luego solo ser enviada como parametro mas adelante. 
+    const VentaID = await db.ventas.findByPk(req.body.id_venta);
+    const InventarioID = await db.i_boletos.findByPk(req.body.id_inventario);
+    const clienteID = await db.cliente.findByPk(req.body.id_cliente);
+
+    if(!VentaID){
+
+        res.status(404).send({
+            message: "esa venta no existe"
+        });
+        return;
+    }
+
+    if(!InventarioID){
+
+        res.status(404).send({
+            message: "no esta en el inventario"
+        });
+        return;
+    }
+
+    if(!clienteID){
+
+        res.status(404).send({
+            message: "no existe dicho cliente"
+        });
+        return;
+    }
+
     const detalle_ventas = {
         id_detalle: req.body.id_detalle,
         id_venta: req.body.id_venta,
@@ -74,7 +101,7 @@ exports.update = (req, res) => {
     const id = req.params.id;
 
     Detalle_ventas.update(req.body, {
-        where: { id: id }
+        where: { id_detalle: id }
     })
         .then(num => {
             if (num == 1) {
@@ -99,7 +126,7 @@ exports.delete = (req, res) => {
     const id = req.params.id;
     // utilizamos el metodo destroy para eliminar el objeto mandamos la condicionante where id = parametro que recibimos 
     Detalle_ventas.destroy({
-        where: { id: id }
+        where: { id_detalle: id }
     })
         .then(num => {
             if (num == 1) {
@@ -136,16 +163,3 @@ exports.deleteAll = (req, res) => {
         });
 };
 
-// find all active Client, basado en el atributo status vamos a buscar que solo los Detalle_ventass activos
-exports.findAllStatus = (req, res) => {
-    Detalle_ventas.findAll({ where: { status: true } })
-        .then(data => {
-            res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving Client."
-            });
-        }); 
-};

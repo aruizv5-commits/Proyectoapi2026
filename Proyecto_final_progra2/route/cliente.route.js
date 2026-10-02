@@ -6,8 +6,7 @@ module.exports = app => {
     // Retrieve all Client
     router.get("/", clientes.findAll);
     // Retrieve all published Client
-    router.get("/status", clientes.findAllStatus);
-    // Retrieve a single Client with id
+   
     router.get("/:id", clientes.findOne);
     // Update a Client with id
     router.put("/update/:id", clientes.update);

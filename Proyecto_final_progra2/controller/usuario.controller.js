@@ -75,7 +75,7 @@ exports.update = (req, res) => {
     const id = req.params.id_usuario;
 
     Usuario.update(req.body, {
-        where: { id: id }
+        where: { id_usuario: id }
     })
         .then(num => {
             if (num == 1) {
@@ -100,7 +100,7 @@ exports.delete = (req, res) => {
     const id = req.params.id_usuario;
     // utilizamos el metodo destroy para eliminar el objeto mandamos la condicionante where id = parametro que recibimos 
     Usuario.destroy({
-        where: { id: id }
+        where: { id_usuario: id }
     })
         .then(num => {
             if (num == 1) {

@@ -138,16 +138,3 @@ exports.deleteAll = (req, res) => {
         });
 };
 
-// find all active Client, basado en el atributo status vamos a buscar que solo los clientes activos
-exports.findAllStatus = (req, res) => {
-    Cliente.findAll({ where: { status: true } })
-        .then(data => {
-            res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving Client."
-            });
-        }); 
-};

@@ -4,7 +4,7 @@ const Ventas = db.ventas;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Client
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
     // Validamos que dentro del  request no venga vacio el nombre, de lo contrario returna error
     if (!req.body.id_venta) {
         res.status(400).send({
@@ -13,7 +13,16 @@ exports.create = (req, res) => {
         return;
     }
 
-    // Create a Client, definiendo una variable con la estructura del reques para luego solo ser enviada como parametro mas adelante. 
+    const VendedorID = await db.usuario.findByPk(req.body.id_vendedor);
+
+    if(!VendedorID){
+
+        res.status(404).send({
+            message: "esa vendedor no existe"
+        });
+        return;
+    }
+
     const ventas = {
         id: req.body.id_venta,
         id_V: req.body.id_vendedor,
@@ -72,7 +81,7 @@ exports.update = (req, res) => {
     const id = req.params.id;
 
     Ventas.update(req.body, {
-        where: { id: id }
+        where: { id_venta: id }
     })
         .then(num => {
             if (num == 1) {
@@ -97,7 +106,7 @@ exports.delete = (req, res) => {
     const id = req.params.id;
     // utilizamos el metodo destroy para eliminar el objeto mandamos la condicionante where id = parametro que recibimos 
     Ventas.destroy({
-        where: { id: id }
+        where: { id_venta: id }
     })
         .then(num => {
             if (num == 1) {
@@ -134,16 +143,3 @@ exports.deleteAll = (req, res) => {
         });
 };
 
-// find all active Client, basado en el atributo status vamos a buscar que solo los Ventass activos
-exports.findAllStatus = (req, res) => {
-    Ventas.findAll({ where: { status: true } })
-        .then(data => {
-            res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving Client."
-            });
-        }); 
-};

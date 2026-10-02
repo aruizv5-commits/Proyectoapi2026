@@ -4,7 +4,7 @@ const I_boletos = db.i_boletos;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Client
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
     // Validamos que dentro del  request no venga vacio el nombre, de lo contrario returna error
     if (!req.body.id_inventario) {
         res.status(400).send({
@@ -13,7 +13,25 @@ exports.create = (req, res) => {
         return;
     }
 
-    // Create a Client, definiendo una variable con la estructura del reques para luego solo ser enviada como parametro mas adelante. 
+    const ConciertoID = await db.concierto.findByPk(req.body.id_concierto);
+    const LocalidadID = await db.localidades.findByPk(req.body.id_localidad);
+
+    if(!ConciertoID){
+
+        res.status(404).send({
+            message: "ese concierto no existe"
+        });
+        return;
+    }
+
+    if(!LocalidadID){
+
+        res.status(404).send({
+            message: "esa localidade no existe"
+        });
+        return;
+    }
+
     const i_boletos = {
         id_I: req.body.id_inventario,
         id_C: req.body.id_concierto,
@@ -73,7 +91,7 @@ exports.update = (req, res) => {
     const id = req.params.id;
 
     I_boletos.update(req.body, {
-        where: { id: id }
+        where: { id_inventario: id }
     })
         .then(num => {
             if (num == 1) {
@@ -98,7 +116,7 @@ exports.delete = (req, res) => {
     const id = req.params.id;
     // utilizamos el metodo destroy para eliminar el objeto mandamos la condicionante where id = parametro que recibimos 
     I_boletos.destroy({
-        where: { id: id }
+        where: { id_inventario: id }
     })
         .then(num => {
             if (num == 1) {
@@ -135,16 +153,3 @@ exports.deleteAll = (req, res) => {
         });
 };
 
-// find all active Client, basado en el atributo status vamos a buscar que solo los I_boletoss activos
-exports.findAllStatus = (req, res) => {
-    I_boletos.findAll({ where: { status: true } })
-        .then(data => {
-            res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving Client."
-            });
-        }); 
-};
