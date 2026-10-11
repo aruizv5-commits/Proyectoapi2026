@@ -13,11 +13,21 @@ exports.create = async (req, res) => {
         return;
     }
 
-    const VentaID = await db.ventas.findByPk(req.body.id_venta);
-    const InventarioID = await db.i_boletos.findByPk(req.body.id_inventario);
+    const ventaID = await db.ventas.findByPk(req.body.id_venta);
+    const inventarioID = await db.i_boletos.findByPk(req.body.id_inventario);
     const clienteID = await db.cliente.findByPk(req.body.id_cliente);
+    const conciertoID = await db.concierto.findByPk(req.body.id_concierto);
+    const localidad = await db.localidades.findByPk(req.body.id_localidad);
 
-    if(!VentaID){
+        if(conciertoID.estado ==="finalizado" || conciertoID.estado ==="Cancelado" ){
+
+        res.status(400).send({
+            message: "ese concierto no se puedeen vender boletos"
+        });
+        return;
+    }
+
+    if(!ventaID){
 
         res.status(404).send({
             message: "esa venta no existe"
@@ -25,7 +35,7 @@ exports.create = async (req, res) => {
         return;
     }
 
-    if(!InventarioID){
+    if(!inventarioID){
 
         res.status(404).send({
             message: "no esta en el inventario"
@@ -41,15 +51,42 @@ exports.create = async (req, res) => {
         return;
     }
 
+    const catidadDetalle = req.body.cantidad;
+
+    if(inventarioID.cantidad_disponible < catidadDetalle){
+
+        res.status(400).send({
+            message: "la cantidad no puede sobre pasar las que estan disponible"
+        });
+        return;
+    }
+    
+    const cantidad = Number(req.body.cantidad);
+    const preciosN = Number(req.body.precio);
+    let totalpagar = 0;
+
+
+    if(localidad.nombre === "VIP"){
+
+        const precios = preciosN * 0.45;
+        totalpagar = preciosN + precios;
+    }else if(localidad.nombre === "Platea"){
+        const precios = preciosN * 0.25;
+        totalpagar = preciosN + precios;
+    }else{
+        totalpagar = preciosN
+    }
+    
     const detalle_ventas = {
         id_detalle: req.body.id_detalle,
         id_venta: req.body.id_venta,
         id_inventario: req.body.id_inventario,
         id_cliente: req.body.id_cliente, 
-        cantidad: req.body.cantidad,
-        precio: req.body.precio_unitario,
-        subtotal: req.body.subtotal
-    };
+        cantidad: cantidad,
+        precio: totalpagar,
+        subtotal: cantidad * totalpagar
+    }
+    
 
     // Save a new Client into the database
     Detalle_ventas.create(detalle_ventas)
@@ -61,6 +98,10 @@ exports.create = async (req, res) => {
                 message:
                     err.message || "Some error occurred while creating the Client."
             });
+        });
+
+        await inventarioID.update({
+            cantidad_disponible: inventarioID.cantidad_disponible - catidadDetalle
         });
 };
 

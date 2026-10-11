@@ -4,7 +4,7 @@ const Localidad = db.localidades;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Client
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
     // Validamos que dentro del  request no venga vacio el nombre, de lo contrario returna error
     if (!req.body.nombre) {
         res.status(400).send({
@@ -13,10 +13,26 @@ exports.create = (req, res) => {
         return;
     }
 
-    // Create a Client, definiendo una variable con la estructura del reques para luego solo ser enviada como parametro mas adelante. 
+    //verifica si el asiento esta ocupado
+    const verificar = await db.localidades.findOne({
+
+        where: {
+            asiento: req.body.asiento
+        }
+    });
+
+    if(verificar){
+        res.status(400).send({
+            message: "Ese asiento esta ocupado"
+        })
+        return;
+    }
+    //-----------------
+    
     const localidad = {
+        id: req.body.id_localidad,
         nombre: req.body.nombre,
-        id: req.body.id_localidad
+        asiento: req.body.asiento
     };
 
     // Save a new Client into the database

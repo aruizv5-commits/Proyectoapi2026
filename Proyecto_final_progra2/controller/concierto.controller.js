@@ -13,8 +13,8 @@ exports.create = async (req, res) => {
         return;
     }
 
-    
-    const ArtistaID = await db.artista.findByPk(req.body.id_artista);
+    // verifica si existe el artista
+    const ArtistaID =await db.artista.findByPk(req.body.id_artista);
 
        if(!ArtistaID){
 
@@ -24,12 +24,35 @@ exports.create = async (req, res) => {
         return;
     }
     
+    
+    // verifica si existe un cocierto con las mismas caracteristicas
+    const ConsiertoExiste = await db.artista.findOne({
+
+        where:{
+
+            id_A: req.body.id_artista,
+            recinto: req.body.recinto,
+            ciudad: req.body.ciudad,
+            estado: req.body.estado,
+            fecha: req.body.fecha_concierto,
+            horario: req.body.horario
+        }
+    });
+
+    if(ConsiertoExiste){
+
+        res.status(400).send({
+            message: "ese concierto no es posible"
+        });
+        return;
+    }
+
 
     const concierto = {
         id_C: req.body.id_concierto,
         id_A: req.body.id_artista,
         titulo: req.body.titulo_evento, 
-        reciento: req.body.recinto,
+        recinto: req.body.recinto,
         ciudad: req.body.ciudad,
         estado: req.body.estado,
         tipo: req.body.tipo_evento,
@@ -37,6 +60,21 @@ exports.create = async (req, res) => {
         horario: req.body.horario
 
     };
+
+    //valida que la fecha sea no sea anterior a la actual
+    const FechaConcierto = new Date(req.body.fecha_concierto);
+
+    const Ahorita = new Date();
+
+    if(FechaConcierto < Ahorita){
+
+        res.status(400).send({
+
+            message: "No se admiten fechas anteriores a la del presente"
+        });
+        return;
+    }
+
 
     
     Concierto.create(concierto)

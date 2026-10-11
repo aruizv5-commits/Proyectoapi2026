@@ -9,7 +9,12 @@ module.exports = (sequelize, Sequelize) => {
         nombre: {
             type: Sequelize.STRING,
             allowNull: false
+        },
+        asiento:{
+            type: Sequelize.STRING,
+            allowNull: false
         }
+
     });
     return Localidad;
 };

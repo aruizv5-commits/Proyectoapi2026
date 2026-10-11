@@ -13,10 +13,11 @@ exports.create = async (req, res) => {
         return;
     }
 
-    const ConciertoID = await db.concierto.findByPk(req.body.id_concierto);
+    const conciertoID = await db.concierto.findByPk(req.body.id_concierto);
     const LocalidadID = await db.localidades.findByPk(req.body.id_localidad);
+    
 
-    if(!ConciertoID){
+    if(!conciertoID){
 
         res.status(404).send({
             message: "ese concierto no existe"
@@ -31,6 +32,8 @@ exports.create = async (req, res) => {
         });
         return;
     }
+
+
 
     const i_boletos = {
         id_I: req.body.id_inventario,
