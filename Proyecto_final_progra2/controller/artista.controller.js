@@ -15,11 +15,10 @@ exports.create = (req, res) => {
 
     // Create a Client, definiendo una variable con la estructura del reques para luego solo ser enviada como parametro mas adelante. 
     const artista = {
-        id: req.body.id_artista,
-        nombre: req.body.nombre_artistico,
-        genero: req.body.genero_musical, 
-        pais: req.body.pais_origen,
-
+        id_artista: req.body.id_artista,
+        nombre_artistico: req.body.nombre_artistico,
+        genero_musical: req.body.genero_musical,
+        pais_origen: req.body.pais_origen
     };
 
     // Save a new Client into the database

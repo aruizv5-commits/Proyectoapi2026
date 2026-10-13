@@ -54,6 +54,7 @@ db.d_ventas.belongsTo(db.i_boletos,{foreignKey: "id_inventario"});
 db.cliente.hasMany(db.d_ventas,{foreignKey: "id_cliente"});
 db.d_ventas.belongsTo(db.cliente,{foreignKey: "id_cliente"});
 
+
 //foreing de cociertos
 db.artista.hasMany(db.concierto, {foreignKey: "id_artista"});
 db.concierto.belongsTo(db.artista, {foreignKey: "id_artista"});
@@ -68,5 +69,6 @@ db.i_boletos.belongsTo(db.localidades, {foreignKey: "id_localidad"});
 //foreing de ventas
 db.usuario.hasMany(db.ventas, {foreignKey: "id_vendedor"});
 db.ventas.belongsTo(db.usuario, {foreignKey: "id_vendedor"});
+
 
 module.exports = db;

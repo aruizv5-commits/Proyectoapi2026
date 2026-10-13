@@ -18,6 +18,10 @@ module.exports = (sequelize, Sequelize) =>{
             type: Sequelize.INTEGER,
             allowNull: false
         },
+        asiento:{
+            type: Sequelize.STRING,
+            allowNull: false
+        },
         cantidad:{
             type: Sequelize.INTEGER,
             allowNull: false

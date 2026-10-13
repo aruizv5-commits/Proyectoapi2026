@@ -6,9 +6,9 @@ const Op = db.Sequelize.Op;
 // Create and Save a new Client
 exports.create = async (req, res) => {
     // Validamos que dentro del  request no venga vacio el nombre, de lo contrario returna error
-    if (!req.body.id_venta) {
+    if (!req.body.id_vendedor) {
         res.status(400).send({
-            message: "Content can not be empty!"
+            message: "Content can not be empty! venta"
         });
         return;
     }
@@ -24,10 +24,10 @@ exports.create = async (req, res) => {
     }
 
     const ventas = {
-        id: req.body.id_venta,
-        id_V: req.body.id_vendedor,
-        fecha: req.body.fecha_venta, 
-        total: req.body.total_venta
+        id_venta: req.body.id_venta,
+        id_vendedor: req.body.id_vendedor,
+        fecha_venta: req.body.fecha_venta, 
+        total_venta: req.body.total_venta
 
     };
 

@@ -15,12 +15,12 @@ exports.create = (req, res) => {
 
     // Create a Client, definiendo una variable con la estructura del reques para luego solo ser enviada como parametro mas adelante. 
     const usuario = {
-        id: req.body.id_usuario,
-        nombre: req.body.nombre_usuario,
-        contrasena: req.body.contrasena_hash, 
-        nombre_c: req.body.nombre_completo,
+        id_usuario: req.body.id_usuario,
+        nombre_usuario: req.body.nombre_usuario,
+        contrasena_hash: req.body.contrasena_hash, 
+        nombre_completo: req.body.nombre_completo,
         rol: req.body.rol,
-        fecha: req.body.fecha_creacion,
+       fecha_creacion: req.body.fecha_creacion,
         // utilizando ? nos ayuda a indicar que el paramatro puede ser opcional dado que si no viene, le podemos asignar un valor default
         status: req.body.status ? req.body.status : false
     };

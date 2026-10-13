@@ -6,7 +6,7 @@ const Op = db.Sequelize.Op;
 // Create and Save a new Client
 exports.create = async (req, res) => {
     // Validamos que dentro del  request no venga vacio el nombre, de lo contrario returna error
-    if (!req.body.id_detalle) {
+    if (!req.body.id_venta) {
         res.status(400).send({
             message: "Content can not be empty!"
         });
@@ -16,18 +16,19 @@ exports.create = async (req, res) => {
     const ventaID = await db.ventas.findByPk(req.body.id_venta);
     const inventarioID = await db.i_boletos.findByPk(req.body.id_inventario);
     const clienteID = await db.cliente.findByPk(req.body.id_cliente);
-    const conciertoID = await db.concierto.findByPk(req.body.id_concierto);
-    const localidad = await db.localidades.findByPk(req.body.id_localidad);
+    const conciertoID = await db.concierto.findByPk(inventarioID.id_concierto);
+    const localidadID = await db.localidades.findOne({
+        where: { id_localidad: inventarioID.id_localidad
+         }
+    });
+    const catidadDetalle = req.body.cantidad;
+    const cantidad = Number(req.body.cantidad);
+    const preciosN = inventarioID.precio;
+    let totalpagar = 0;
 
-        if(conciertoID.estado ==="finalizado" || conciertoID.estado ==="Cancelado" ){
 
-        res.status(400).send({
-            message: "ese concierto no se puedeen vender boletos"
-        });
-        return;
-    }
 
-    if(!ventaID){
+        if(!ventaID){
 
         res.status(404).send({
             message: "esa venta no existe"
@@ -51,7 +52,32 @@ exports.create = async (req, res) => {
         return;
     }
 
-    const catidadDetalle = req.body.cantidad;
+
+        if(!conciertoID){
+
+        res.status(404).send({
+            message: "no existe dicho concierto"
+        });
+        return;
+    }
+
+        if(!localidadID){
+
+        res.status(404).send({
+            message: "no existe dicha localidadID"
+        });
+        return;
+    }
+
+        if(conciertoID.estado ==="finalizado" || conciertoID.estado ==="Cancelado" ){
+
+        res.status(400).send({
+            message: "ese concierto no se puedeen vender boletos"
+        });
+        return;
+    }
+
+    
 
     if(inventarioID.cantidad_disponible < catidadDetalle){
 
@@ -61,29 +87,35 @@ exports.create = async (req, res) => {
         return;
     }
     
-    const cantidad = Number(req.body.cantidad);
-    const preciosN = Number(req.body.precio);
-    let totalpagar = 0;
 
 
-    if(localidad.nombre === "VIP"){
+    const nombreLocalidad = localidadID.nombre ? localidadID.nombre.trim() : "";
 
+    if (nombreLocalidad === "VIP") {
         const precios = preciosN * 0.45;
         totalpagar = preciosN + precios;
-    }else if(localidad.nombre === "Platea"){
+    } else if (nombreLocalidad === "Platea") {
         const precios = preciosN * 0.25;
         totalpagar = preciosN + precios;
-    }else{
-        totalpagar = preciosN
+    } else {
+        totalpagar = preciosN;
     }
-    
+
+    if(localidadID.estado){
+            res.status(400).send({
+            message: "no se puede elegir ese asiento"
+        });
+        return;
+    }
+
     const detalle_ventas = {
         id_detalle: req.body.id_detalle,
         id_venta: req.body.id_venta,
         id_inventario: req.body.id_inventario,
-        id_cliente: req.body.id_cliente, 
+        id_cliente: req.body.id_cliente,
+        asiento: localidadID.asiento, 
         cantidad: cantidad,
-        precio: totalpagar,
+        precio_unitario: totalpagar,
         subtotal: cantidad * totalpagar
     }
     
@@ -102,6 +134,10 @@ exports.create = async (req, res) => {
 
         await inventarioID.update({
             cantidad_disponible: inventarioID.cantidad_disponible - catidadDetalle
+        });
+
+        await localidadID.update({
+            estado:true
         });
 };
 

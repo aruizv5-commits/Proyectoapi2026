@@ -30,9 +30,10 @@ exports.create = async (req, res) => {
     //-----------------
     
     const localidad = {
-        id: req.body.id_localidad,
+        id_localidad: req.body.id_localidad,
         nombre: req.body.nombre,
-        asiento: req.body.asiento
+        asiento: req.body.asiento,
+        estado: req.body.estado
     };
 
     // Save a new Client into the database

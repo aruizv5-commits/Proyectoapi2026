@@ -1,20 +1,25 @@
 module.exports = (sequelize, Sequelize) => {
-
-    const Localidad = sequelize.define("localidad", {
+    const localidad = sequelize.define("localidad", {
         id_localidad: {
-                type: Sequelize.INTEGER,
-                autoIncrement: true,
-                primaryKey: true
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
         },
         nombre: {
             type: Sequelize.STRING,
             allowNull: false
         },
-        asiento:{
+        asiento: {
             type: Sequelize.STRING,
             allowNull: false
+        },
+        estado: {
+            type: Sequelize.BOOLEAN
         }
-
+    }, {
+        tableName: "localidads",
+        freezeTableName: true
     });
-    return Localidad;
+
+    return localidad;
 };

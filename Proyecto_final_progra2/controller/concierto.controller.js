@@ -6,9 +6,9 @@ const Op = db.Sequelize.Op;
 // Create and Save a new Client
 exports.create = async (req, res) => {
     // Validamos que dentro del  request no venga vacio el nombre, de lo contrario returna error
-    if (!req.body.titulo) {
+    if (!req.body.titulo_evento) {
         res.status(400).send({
-            message: "Content can not be empty!"
+            message: "Content can not be empty! concierto"
         });
         return;
     }
@@ -26,16 +26,14 @@ exports.create = async (req, res) => {
     
     
     // verifica si existe un cocierto con las mismas caracteristicas
-    const ConsiertoExiste = await db.artista.findOne({
+    const ConsiertoExiste = await Concierto.findOne({
 
         where:{
 
-            id_A: req.body.id_artista,
+            id_artista: req.body.id_artista,
             recinto: req.body.recinto,
             ciudad: req.body.ciudad,
-            estado: req.body.estado,
-            fecha: req.body.fecha_concierto,
-            horario: req.body.horario
+            fecha_concierto: req.body.fecha_concierto,
         }
     });
 
@@ -48,15 +46,15 @@ exports.create = async (req, res) => {
     }
 
 
-    const concierto = {
-        id_C: req.body.id_concierto,
-        id_A: req.body.id_artista,
-        titulo: req.body.titulo_evento, 
+    const conciertoOB = {
+        id_concierto: req.body.id_concierto,
+        id_artista: req.body.id_artista,
+        titulo_evento: req.body.titulo_evento, 
         recinto: req.body.recinto,
         ciudad: req.body.ciudad,
         estado: req.body.estado,
-        tipo: req.body.tipo_evento,
-        fecha: req.body.fecha_concierto,
+        tipo_evento: req.body.tipo_evento,
+        fecha_concierto: req.body.fecha_concierto,
         horario: req.body.horario
 
     };
@@ -77,7 +75,7 @@ exports.create = async (req, res) => {
 
 
     
-    Concierto.create(concierto)
+    Concierto.create(conciertoOB)
         .then(data => {
             res.send(data);
         })
