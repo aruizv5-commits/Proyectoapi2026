@@ -6,15 +6,9 @@ module.exports = app => {
     
     router.get("/", localidades.findAll);
     
-   
-
     router.get("/:id", localidades.findOne);
    
-    router.put("/update/:id", localidades.update);
-   
-    router.delete("/delete/:id", localidades.delete);
 
-    router.delete("/delete/", localidades.deleteAll);
 
     app.use("/api/localidades", router);
 };

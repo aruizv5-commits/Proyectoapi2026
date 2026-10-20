@@ -1,0 +1,14 @@
+{
+  "service": "gmail",
+  "auth": {
+    "type": "OAuth2",
+    "user": "adriruizvega@gmail.com",
+    "clientId": "179112969628-f5k9sqda5iin886v7716g1jb2hgg61r6.apps.googleusercontent.com",
+    "clientSecret": "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",
+    "refreshToken": "1//04hPH1dBkuRXzCgYIARAAGAQSNwF-L9Ir0IN7tLi3CDq8EPYvMtmhcfQfcC3DSPP-KyfBOwoMTzjERwiV5zC7YbpNvlTvF_5shWg"
+  },
+
+  "tls": {
+    "rejectUnauthorized": false
+  }
+}

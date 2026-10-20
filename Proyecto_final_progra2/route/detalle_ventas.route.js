@@ -10,11 +10,11 @@ module.exports = app => {
 
     router.get("/:id", detalle_ventas.findOne);
    
-    router.put("/update/:id", detalle_ventas.update);
+    
    
     router.delete("/delete/:id", detalle_ventas.delete);
 
-    router.delete("/delete/", detalle_ventas.deleteAll);
+   
 
     app.use("/api/detalle_ventas", router);
 };

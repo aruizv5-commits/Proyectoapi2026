@@ -53,7 +53,7 @@ exports.findAll = (req, res) => {
 
 // Find a single Tutorial with an id
 exports.findOne = (req, res) => {
-    const id = req.params.id_artista;
+    const id = req.params.id;
 
     Artista.findByPk(id)
         .then(data => {
@@ -68,7 +68,7 @@ exports.findOne = (req, res) => {
 
 // Update a Tutorial by the id in the request
 exports.update = (req, res) => {
-    const id = req.params.id_artista;
+    const id = req.params.id;
 
     Artista.update(req.body, {
         where: { id_artista: id }
@@ -89,6 +89,102 @@ exports.update = (req, res) => {
                 message: "Error updating Client with id=" + id
             });
         });
+};
+
+exports.BuscarNombre = async (req, res) => {
+
+    try{
+    const nombre = req.params.nombre;
+
+    const artista = await Artista.findOne({
+            where: {
+                nombre_artistico: {
+                    [Op.iLike]: `%${nombre.trim()}%` 
+                }
+            }
+        });
+ 
+
+        if(!artista || artista.length === 0){
+
+        res.status(404).send({
+            message: "esa no hay artista llamado: "+nombre
+        });
+        return;
+    }
+
+    res.status(200).send(artista);
+
+    } catch(err){
+
+        res.status(500).send({
+            message: "error al buscar artista "
+        });
+    }
+};
+
+exports.BuscarGeneroMusical = async (req, res) => {
+
+    try{
+    const Genero = req.params.buscarGenero;
+
+    const GeneroMusical = await Artista.findAll({
+            where: {
+                genero_musical: {
+                    [Op.iLike]: `%${Genero.trim()}%` 
+                }
+            }
+        });
+ 
+
+        if(!GeneroMusical || GeneroMusical.length === 0){
+
+        res.status(404).send({
+            message: "esa no hay : "+Genero
+        });
+        return;
+    }
+
+    res.status(200).send(GeneroMusical);
+
+    } catch(err){
+
+        res.status(500).send({
+            message: "error al buscar genero musical "
+        });
+    }
+};
+
+exports.BuscarPais = async (req, res) => {
+
+    try{
+    const pais = req.params.BuscarPais;
+
+    const artista = await Artista.findAll({
+            where: {
+                pais_origen: {
+                    [Op.iLike]: `%${pais.trim()}%` 
+                }
+            }
+        });
+ 
+
+        if(!artista || artista.length === 0){
+
+        res.status(404).send({
+            message: "esa no hay un artista registrado en ese lugar: "+pais
+        });
+        return;
+    }
+
+    res.status(200).send(artista);
+
+    } catch(err){
+
+        res.status(500).send({
+            message: "error al buscar por pais "
+        });
+    }
 };
 
 // Delete a Client with the specified id in the request
@@ -116,20 +212,5 @@ exports.delete = (req, res) => {
         });
 };
 
-// Delete all Clients from the database.
-exports.deleteAll = (req, res) => {
-    Artista.destroy({
-        where: {},
-        truncate: false
-    })
-        .then(nums => {
-            res.send({ message: `${nums} Clients were deleted successfully!` });
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while removing all clients."
-            });
-        });
-};
+
 

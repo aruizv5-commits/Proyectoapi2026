@@ -6,7 +6,7 @@ module.exports = app => {
     
     router.get("/", usuario.findAll);
     
-    router.get("/status", usuario.findAllStatus);
+    router.get("/estado/:status", usuario.findAllStatus);
 
     router.get("/:id", usuario.findOne);
    
@@ -14,7 +14,6 @@ module.exports = app => {
    
     router.delete("/delete/:id", usuario.delete);
 
-    router.delete("/delete/", usuario.deleteAll);
 
     app.use("/api/usuario", router);
 };

@@ -1,52 +1,104 @@
 // importamos db los modelos en este caso si tenemos uno o mas, se puede referenciar db."nombreModelo".   
 const db = require("../models");
 const Localidad = db.localidades;
+const I_boletos = db.i_boletos;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Client
 exports.create = async (req, res) => {
     // Validamos que dentro del  request no venga vacio el nombre, de lo contrario returna error
-    if (!req.body.nombre) {
+    if (!req.body.id_concierto || !req.body.precio ) {
         res.status(400).send({
-            message: "Content can not be empty!"
+            message: "el precio o concierto no deben ir vacios"
         });
         return;
     }
 
-    //verifica si el asiento esta ocupado
-    const verificar = await db.localidades.findOne({
+    try{
 
-        where: {
-            asiento: req.body.asiento
-        }
+        const conciertoID = await db.concierto.findByPk(req.body.id_concierto);
+        
+    
+              if(!conciertoID){
+
+        res.status(404).send({
+            message: "ese concierto no existe"
+        });
+        return;
+    }
+
+    const Totalfila = 10;
+    const Asintoporfila = 10;
+  let listaAsientos = [];
+  const totalAsientos= Totalfila * Asintoporfila;
+
+  const porVIP = 0.10;
+  const porPlata = 0.20;
+
+  const limVip = Math.floor(totalAsientos * porVIP);
+  const limPlata = limVip + Math.floor(totalAsientos* porPlata);
+
+  const LetraAsiento = ['A','B','C','D','E','F','G','H','I','J'];
+  let contadorAsiento = 0;
+
+
+
+  for(let i = 0; i < Totalfila; i++){
+
+    const letraFila = LetraAsiento[i];
+
+    for(let a = 1; a <= Asintoporfila; a++){
+
+
+        contadorAsiento++;
+
+                
+                let nombreLocalidad = "";
+                if (contadorAsiento <= limVip) {
+                    nombreLocalidad = "VIP";
+                } else if (contadorAsiento <= limPlata) {
+                    nombreLocalidad = "Platea";
+                } else {
+                    nombreLocalidad = "General";
+                }
+                
+        listaAsientos.push({
+        
+        nombre: nombreLocalidad,
+        asiento: `${letraFila}-${a}`,
+        estado: req.body.status ? req.body.status : false
+        });
+    }
+  }
+
+
+    
+    const localidadesCreadas = await Localidad.bulkCreate(listaAsientos, { returning: true });
+
+    let inventarioInsertar = localidadesCreadas.map(cod =>{
+        return{
+
+            id_concierto: req.body.id_concierto,
+            id_localidad: cod.id_localidad,
+            precio: req.body.precio,
+            cantidad_total: 1,
+            cantidad_disponible: 1
+        };
     });
 
-    if(verificar){
-        res.status(400).send({
-            message: "Ese asiento esta ocupado"
-        })
-        return;
-    }
-    //-----------------
-    
-    const localidad = {
-        id_localidad: req.body.id_localidad,
-        nombre: req.body.nombre,
-        asiento: req.body.asiento,
-        estado: req.body.estado
-    };
+    const InventarioCreado = await I_boletos.bulkCreate(inventarioInsertar);
 
-    // Save a new Client into the database
-    Localidad.create(localidad)
-        .then(data => {
-            res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while creating the Client."
-            });
+        return res.status(201).send({
+            message: "Se crearon exitosamente los asientos.",
+            
         });
+    // Save a new Client into the database
+    } catch(err) {
+            res.status(500).send({
+                message: "error al crear los asientos"
+            });
+        };
+    
 };
 
 // Retrieve all Client from the database.
@@ -81,70 +133,4 @@ exports.findOne = (req, res) => {
         });
 };
 
-// Update a Tutorial by the id in the request
-exports.update = (req, res) => {
-    const id = req.params.id;
-
-    Localidad.update(req.body, {
-        where: { id_localidad: id }
-    })
-        .then(num => {
-            if (num == 1) {
-                res.send({
-                    message: "Localidad was updated successfully."
-                });
-            } else {
-                res.send({
-                    message: `Cannot update Client with id=${id}. Maybe Client was not found or req.body is empty!`
-                });
-            }
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: "Error updating Client with id=" + id
-            });
-        });
-};
-
-// Delete a Client with the specified id in the request
-exports.delete = (req, res) => {
-    const id = req.params.id;
-    // utilizamos el metodo destroy para eliminar el objeto mandamos la condicionante where id = parametro que recibimos 
-    Localidad.destroy({
-        where: { id_localidad: id }
-    })
-        .then(num => {
-            if (num == 1) {
-                res.send({
-                    message: "Client was deleted successfully!"
-                });
-            } else {
-                res.send({
-                    message: `Cannot delete Client with id=${id}. El Localidad no fue encontado!`
-                });
-            }
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: "Could not delete Tutorial with id=" + id
-            });
-        });
-};
-
-// Delete all Clients from the database.
-exports.deleteAll = (req, res) => {
-    Localidad.destroy({
-        where: {},
-        truncate: false
-    })
-        .then(nums => {
-            res.send({ message: `${nums} Clients were deleted successfully!` });
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while removing all clients."
-            });
-        });
-};
 

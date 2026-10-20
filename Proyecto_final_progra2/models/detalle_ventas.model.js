@@ -3,6 +3,7 @@ module.exports = (sequelize, Sequelize) =>{
         id_detalle:{
             type: Sequelize.INTEGER,
             autoIncrement:true,
+            allowNull: false,
             primaryKey:true
         },
         id_venta:{

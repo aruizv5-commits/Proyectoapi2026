@@ -1,6 +1,7 @@
 // importamos db los modelos en este caso si tenemos uno o mas, se puede referenciar db."nombreModelo".   
 const db = require("../models");
 const Concierto = db.concierto;
+const Artista = db.artista;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Client
@@ -13,8 +14,35 @@ exports.create = async (req, res) => {
         return;
     }
 
+    if (!req.body.fecha_concierto) {
+            return res.status(400).send({
+                message: "La fecha del concierto es obligatoria."
+            });
+        }
+
+           //valida que la fecha sea no sea anterior a la actual
+    const FechaConcierto = new Date(req.body.fecha_concierto);
+
+    const Ahorita = new Date();
+
+    if (isNaN(FechaConcierto.getTime())) {
+            return res.status(400).send({
+                message: "El formato de la fecha del concierto es inválido."
+            });
+        }
+
+    if(FechaConcierto < Ahorita){
+
+       return res.status(400).send({
+
+            message: "No se admiten fechas anteriores a la del presente"
+        });
+        
+    }
     // verifica si existe el artista
-    const ArtistaID =await db.artista.findByPk(req.body.id_artista);
+    const ArtistaID =await Artista.findByPk(req.body.id_artista);
+    
+    
 
        if(!ArtistaID){
 
@@ -24,6 +52,7 @@ exports.create = async (req, res) => {
         return;
     }
     
+
     
     // verifica si existe un cocierto con las mismas caracteristicas
     const ConsiertoExiste = await Concierto.findOne({
@@ -47,7 +76,6 @@ exports.create = async (req, res) => {
 
 
     const conciertoOB = {
-        id_concierto: req.body.id_concierto,
         id_artista: req.body.id_artista,
         titulo_evento: req.body.titulo_evento, 
         recinto: req.body.recinto,
@@ -59,21 +87,7 @@ exports.create = async (req, res) => {
 
     };
 
-    //valida que la fecha sea no sea anterior a la actual
-    const FechaConcierto = new Date(req.body.fecha_concierto);
-
-    const Ahorita = new Date();
-
-    if(FechaConcierto < Ahorita){
-
-        res.status(400).send({
-
-            message: "No se admiten fechas anteriores a la del presente"
-        });
-        return;
-    }
-
-
+ 
     
     Concierto.create(conciertoOB)
         .then(data => {
@@ -108,9 +122,7 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
     const id = req.params.id;
 
-    Concierto.findByPk(id)
-        .then(data => {
-            res.send(data);
+    Concierto.findByPk(id).then(data => {res.send(data);
         })
         .catch(err => {
             res.status(500).send({
@@ -119,9 +131,165 @@ exports.findOne = (req, res) => {
         });
 };
 
+exports.BuscarNombre = async (req, res) => {
+
+    try{
+    const nombre = req.params.buscarNombre;
+    const artista = await Artista.findAll({
+            where: {
+                nombre_artistico: {
+                    [Op.iLike]: `%${nombre.trim()}%` 
+                }
+            }
+        });
+
+
+        if(!artista || artista.length === 0){
+
+        res.status(404).send({
+            message: "esa no hay artista llamado: "+nombre
+        });
+        return;
+    }
+
+    const artistasIds = artista.map(art => art.id_artista);
+
+    const ID = await Concierto.findAll({where: {
+                id_artista: {
+                    [Op.in]: artistasIds 
+                },
+                estado: "activo" 
+            }
+        });
+
+        if (!ID || ID.length === 0) {
+            return res.status(404).send({
+                message: "Se encontró al artistapero no tiene conciertos activos registrados."
+            });
+        }
+
+    res.status(200).send(ID);
+
+    } catch(err){
+
+        res.status(500).send({
+            message: "error al buscar artista "
+        });
+    }
+};
+
+exports.BuscarEvento = async (req, res) => {
+
+    try{
+    const evento = req.params.buscarEvento;;
+    const evntos = await Concierto.findAll({where: {
+                tipo_evento: {
+                    [Op.iLike]: `%${evento.trim()}%`
+                },
+                estado: "activo"
+            }
+        });
+
+        
+
+        if(!evntos || evntos.length === 0){
+
+        res.status(404).send({
+            message: "esa no hay eventos: "+evento
+        });
+        return;
+    }
+
+    res.status(200).send(evntos);
+
+    } catch(err){
+
+        res.status(500).send({
+            message: "error al buscar ese evento "
+        });
+    }
+};
+
+exports.BuscarFecha = async (req, res) => {
+
+    try{
+    const fecha = req.params.BuscarFecha;
+    if (!fecha) {
+            return res.status(400).send({
+                message: "Debe proporcionar el parámetro 'fecha_concierto' para realizar la búsqueda."
+            });
+        }
+  
+        const inicioDia = new Date(`${fecha}T00:00:00.000Z`);
+        const finDia = new Date(`${fecha}T23:59:59.999Z`);
+
+        if (isNaN(inicioDia.getTime())) {
+            return res.status(400).send({
+                message: "Formato de fecha inválido. Use el formato YYYY-MM-DD (ej: 2026-11-15)."
+            });
+        }
+ 
+        const evntos = await Concierto.findAll({
+            where: {
+                fecha_concierto: {
+                    [Op.between]: [inicioDia, finDia]
+                },
+                estado: "activo" 
+            }
+        });
+
+        if(!evntos || evntos.length === 0){
+
+        res.status(404).send({
+            message: "esa no hay una actividad planificada para esa fecha"
+        });
+        return;
+    }
+
+    res.status(200).send(evntos);
+
+    } catch(err){
+
+        res.status(500).send({
+            message: "error al buscar ese evento "
+        });
+    }
+};
+
 // Update a Tutorial by the id in the request
-exports.update = (req, res) => {
+exports.update = async(req, res) => {
     const id = req.params.id;
+
+      const ConsiertoExiste = await Concierto.findOne({
+            where: {
+                id_concierto: { [Op.ne]: id }, 
+                id_artista: req.body.id_artista,
+                recinto: req.body.recinto,
+                ciudad: req.body.ciudad,
+                fecha_concierto: req.body.fecha_concierto,
+            }
+        });
+
+    if(ConsiertoExiste){
+
+        res.status(400).send({
+            message: "ese concierto no es posible"
+        });
+        return;
+    }
+
+    const FechaConcierto = new Date(req.body.fecha_concierto);
+
+    const Ahorita = new Date();
+
+    if(FechaConcierto < Ahorita){
+
+        res.status(400).send({
+
+            message: "No se admiten fechas anteriores a la del presente"
+        });
+        return;
+    }
 
     Concierto.update(req.body, {
         where: { id_concierto: id }

@@ -6,7 +6,9 @@ module.exports = app => {
     
     router.get("/", artista.findAll);
     
-  
+    router.get("/nombre/:buscar", artista.BuscarNombre);
+    router.get("/genero/:buscarGenero", artista.BuscarGeneroMusical);
+    router.get("/pais/:BuscarPais", artista.BuscarPais);
 
     router.get("/:id", artista.findOne);
    
@@ -14,7 +16,7 @@ module.exports = app => {
    
     router.delete("/delete/:id", artista.delete);
 
-    router.delete("/delete/", artista.deleteAll);
+    
 
     app.use("/api/artista", router);
 };

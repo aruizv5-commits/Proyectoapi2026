@@ -23,7 +23,7 @@ exports.create = (req, res) => {
         telefono: req.body.telefono,
         nit: req.body.nit,
         // utilizando ? nos ayuda a indicar que el paramatro puede ser opcional dado que si no viene, le podemos asignar un valor default
-        status: req.body.status ? req.body.status : false
+        status: req.body.status ? req.body.status : true
     };
 
     // Save a new Client into the database
@@ -121,20 +121,16 @@ exports.delete = (req, res) => {
         });
 };
 
-// Delete all Clients from the database.
-exports.deleteAll = (req, res) => {
-    Cliente.destroy({
-        where: {},
-        truncate: false
-    })
-        .then(nums => {
-            res.send({ message: `${nums} Clients were deleted successfully!` });
+exports.findAllStatus = (req, res) => {
+    Cliente.findAll({ where: { status: true } })
+        .then(data => {
+            res.send(data);
         })
         .catch(err => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while removing all clients."
+                    err.message || "Some error occurred while retrieving Client."
             });
-        });
+        }); 
 };
 

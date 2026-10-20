@@ -15,7 +15,6 @@ exports.create = (req, res) => {
 
     // Create a Client, definiendo una variable con la estructura del reques para luego solo ser enviada como parametro mas adelante. 
     const usuario = {
-        id_usuario: req.body.id_usuario,
         nombre_usuario: req.body.nombre_usuario,
         contrasena_hash: req.body.contrasena_hash, 
         nombre_completo: req.body.nombre_completo,
@@ -57,7 +56,7 @@ exports.findAll = (req, res) => {
 
 // Find a single Tutorial with an id
 exports.findOne = (req, res) => {
-    const id = req.params.id_usuario;
+    const id = req.params.id;
 
     Usuario.findByPk(id)
         .then(data => {
@@ -72,7 +71,7 @@ exports.findOne = (req, res) => {
 
 // Update a Tutorial by the id in the request
 exports.update = (req, res) => {
-    const id = req.params.id_usuario;
+    const id = req.params.id;
 
     Usuario.update(req.body, {
         where: { id_usuario: id }
@@ -120,26 +119,12 @@ exports.delete = (req, res) => {
         });
 };
 
-// Delete all Clients from the database.
-exports.deleteAll = (req, res) => {
-    Usuario.destroy({
-        where: {},
-        truncate: false
-    })
-        .then(nums => {
-            res.send({ message: `${nums} Clients were deleted successfully!` });
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while removing all clients."
-            });
-        });
-};
+
 
 // find all active Client, basado en el atributo status vamos a buscar que solo los Usuarios activos
 exports.findAllStatus = (req, res) => {
-    Usuario.findAll({ where: { status: true } })
+    const estado = req.params.status;
+    Usuario.findAll({ where: { status: estado } })
         .then(data => {
             res.send(data);
         })

@@ -3,6 +3,7 @@ module.exports = (sequelize, Sequelize) => {
         id_localidad: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
+            allowNull: false,
             primaryKey: true
         },
         nombre: {

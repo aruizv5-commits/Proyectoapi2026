@@ -24,7 +24,6 @@ exports.create = async (req, res) => {
     }
 
     const ventas = {
-        id_venta: req.body.id_venta,
         id_vendedor: req.body.id_vendedor,
         fecha_venta: req.body.fecha_venta, 
         total_venta: req.body.total_venta
@@ -76,70 +75,4 @@ exports.findOne = (req, res) => {
         });
 };
 
-// Update a Tutorial by the id in the request
-exports.update = (req, res) => {
-    const id = req.params.id;
-
-    Ventas.update(req.body, {
-        where: { id_venta: id }
-    })
-        .then(num => {
-            if (num == 1) {
-                res.send({
-                    message: "Ventas was updated successfully."
-                });
-            } else {
-                res.send({
-                    message: `Cannot update Client with id=${id}. Maybe Client was not found or req.body is empty!`
-                });
-            }
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: "Error updating Client with id=" + id
-            });
-        });
-};
-
-// Delete a Client with the specified id in the request
-exports.delete = (req, res) => {
-    const id = req.params.id;
-    // utilizamos el metodo destroy para eliminar el objeto mandamos la condicionante where id = parametro que recibimos 
-    Ventas.destroy({
-        where: { id_venta: id }
-    })
-        .then(num => {
-            if (num == 1) {
-                res.send({
-                    message: "Client was deleted successfully!"
-                });
-            } else {
-                res.send({
-                    message: `Cannot delete Client with id=${id}. El Ventas no fue encontado!`
-                });
-            }
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: "Could not delete Tutorial with id=" + id
-            });
-        });
-};
-
-// Delete all Clients from the database.
-exports.deleteAll = (req, res) => {
-    Ventas.destroy({
-        where: {},
-        truncate: false
-    })
-        .then(nums => {
-            res.send({ message: `${nums} Clients were deleted successfully!` });
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while removing all clients."
-            });
-        });
-};
 

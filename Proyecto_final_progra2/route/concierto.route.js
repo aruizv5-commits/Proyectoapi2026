@@ -6,7 +6,9 @@ module.exports = app => {
     
     router.get("/", concierto.findAll);
     
-   
+   router.get("/nombre/:buscarNombre", concierto.BuscarNombre);
+   router.get("/evento/:buscarEvento", concierto.BuscarEvento);
+    router.get("/fecha/:BuscarFecha", concierto.BuscarFecha);
 
     router.get("/:id", concierto.findOne);
    
