@@ -57,7 +57,7 @@ exports.create = async (req, res) => {
                 if (contadorAsiento <= limVip) {
                     nombreLocalidad = "VIP";
                 } else if (contadorAsiento <= limPlata) {
-                    nombreLocalidad = "Platea";
+                    nombreLocalidad = "Plata";
                 } else {
                     nombreLocalidad = "General";
                 }
