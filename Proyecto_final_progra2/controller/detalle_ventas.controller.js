@@ -49,6 +49,7 @@ exports.create = async (req, res) => {
 //otras cosas que no me recuerdo bien pero son importantes
     const ventaID = await db.ventas.findByPk(req.body.id_venta);
     const clienteID = await db.cliente.findByPk(req.body.id_cliente);
+    const Ventaexiste = await Detalle_ventas.findOne({where:{id_venta: req.body.id_venta}})
     
     const id_inventarios =  req.body.id_inventario;
     
@@ -60,6 +61,14 @@ exports.create = async (req, res) => {
         });
         return;
     }
+
+    if(Ventaexiste){
+        res.status(400).send({
+            message: "esa venta no es posible"
+        });
+        return;
+    }
+
         if(!clienteID){
 
         res.status(404).send({
