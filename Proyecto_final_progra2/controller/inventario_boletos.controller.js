@@ -1,6 +1,8 @@
 // importamos db los modelos en este caso si tenemos uno o mas, se puede referenciar db."nombreModelo".   
+const { Model } = require("sequelize");
 const db = require("../models");
 const I_boletos = db.i_boletos;
+const Localidad = db.localidades;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Client
@@ -36,6 +38,36 @@ exports.findOne = (req, res) => {
                 message: "Error retrieving I_boletos with id=" + id
             });
         });
+};
+
+exports.EncontrarPorConcierto = async (req,res) => {
+
+    try{
+        const Concierto = req.params.id;
+        
+        const evntos = await I_boletos.findAll({where: {
+                    id_concierto: Concierto
+             },include: [{
+                model: Localidad
+            }]
+            });
+
+        
+
+        if(!evntos || evntos.length === 0){
+
+        res.status(404).send({
+            message: "esa no hay concierto: "+db.concierto
+        });
+        return;
+    }
+
+    res.status(200).send(evntos);
+} catch(err){
+    res.status(500).send({
+            message: "error al buscar concierto"
+        });
+}
 };
 
 // Update a Tutorial by the id in the request

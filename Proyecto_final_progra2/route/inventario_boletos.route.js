@@ -9,6 +9,8 @@ module.exports = app => {
    
 
     router.get("/:id", inventario_boletos.findOne);
+
+    router.get("/BuscarConcierto/:id", inventario_boletos.EncontrarPorConcierto);
    
 
 
