@@ -181,7 +181,7 @@ detallesAInsertar.push({
        if (clienteID && clienteID.correo) {
             
             // Llamamos a tu función mail_rover pasándole el transporter
-            mail_rover(async (emailTransporter) => {
+            mail_rover(1, async (transporterConfig) => {
                 
                 // Aquí defines el ID de la app o de la configuración que necesites (ej: _ID_APP_1)
                 const idAppConfig = _ID_APP_1; 
@@ -190,7 +190,7 @@ detallesAInsertar.push({
                 // (Adaptado a la estructura JSON que regresa tu switch)
                 const jsonConfig = {
                     url: _SERVER + 'check/', 
-                    mail: emailTransporter, 
+                    mail: transporterConfig, 
                     app: 'CHECK', 
                     from: 'Check <check@planck.biz>',
                     to: clienteID.correo, // 👈 IMPORTANTE: Aquí va el correo dinámico del cliente que compró
