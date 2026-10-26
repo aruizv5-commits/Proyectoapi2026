@@ -199,9 +199,9 @@ detallesAInsertar.push({
                     app: 'CHECK', 
                     from: 'Check <adriruizvega@gmail.com>',
                     to: clienteID.correo, // 👈 IMPORTANTE: Aquí va el correo dinámico del cliente que compró
-                    slogan: '😋 Comida exquisita, entregas simples. 🛵 Compra YA! 👇🏻',
+                    slogan: '😋 Cambio de mensaje slo para probar.',
                     body_bienvanida: 'Mensaje personalizado', 
-                    head_bienvanida: 'En Check pide a tu local favorito, o chatea con un asesor por medicina, y te lo llevamos lo antes posible.',
+                    head_bienvanida: 'cambio de mensaje para ver si funciona',
                     bcc: 'Info <planck.biz@gmail.com>', 
                     head: typeof head !== 'undefined' ? head : '', 
                     footer: typeof footer !== 'undefined' ? footer : ''
