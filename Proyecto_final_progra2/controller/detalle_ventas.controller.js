@@ -161,7 +161,14 @@ detallesAInsertar.push({
             const nuevoStock = item.inventarioModel.cantidad_disponible - 1;
             await item.inventarioModel.update({ cantidad_disponible: nuevoStock });
 
-            if (nuevoStock <= 0) {
+            const inventariosRestantes = await db.inventario_boletos.count({
+                where: {
+                    id_concierto: item.conciertoModel.id_concierto,
+                    cantidad_disponible: { [Op.gt]: 0 } 
+                }
+            });
+
+            if (inventariosRestantes === 0) {
                 await item.conciertoModel.update({ estado: "Agotado" });
             }
         }
