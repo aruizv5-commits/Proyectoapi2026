@@ -20,10 +20,13 @@ exports.create = async (req, res) => {
             });
         }
 
-           //valida que la fecha sea no sea anterior a la actual
-    const FechaConcierto = new Date(req.body.fecha_concierto);
+           
+    const parts = req.body.fecha_concierto.split('-'); 
+    const FechaConcierto = new Date(parts[0], parts[1] - 1, parts[2]);
 
+    
     const Ahorita = new Date();
+    Ahorita.setHours(0, 0, 0, 0);
 
     if (isNaN(FechaConcierto.getTime())) {
             return res.status(400).send({
