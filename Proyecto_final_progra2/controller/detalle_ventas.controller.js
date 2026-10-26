@@ -17,7 +17,7 @@ const _ID_APP_1 = 1;
 const head = "<div style='background:#333;color:#fff;padding:10px;'>Encabezado</div>";                          
 const footer = "<div style='font-size:12px;color:#777;'>Pie de página</div>";
 
-const mail_rover = async (callback) => {
+const mail_rover = async (idApp, callback) => {
     const oauth2Client = new OAuth2(
         accountTransport.auth.clientId,
         accountTransport.auth.clientSecret,
@@ -35,7 +35,12 @@ const mail_rover = async (callback) => {
         accountTransport.auth.accessToken = token;
         callback(nodemailer.createTransport(accountTransport));
     });
+    if (typeof callback === 'function') {
+        callback(nodemailer.createTransport(accountTransport));
+    }
 };
+
+
 
 // Create and Save a new Client
 exports.create = async (req, res) => {
