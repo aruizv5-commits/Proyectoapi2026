@@ -161,7 +161,7 @@ detallesAInsertar.push({
             const nuevoStock = item.inventarioModel.cantidad_disponible - 1;
             await item.inventarioModel.update({ cantidad_disponible: nuevoStock });
 
-            const inventariosRestantes = await db.inventario_boletos.count({
+            const inventariosRestantes = await db.i_boletos.count({
                 where: {
                     id_concierto: item.conciertoModel.id_concierto,
                     cantidad_disponible: { [Op.gt]: 0 } 
