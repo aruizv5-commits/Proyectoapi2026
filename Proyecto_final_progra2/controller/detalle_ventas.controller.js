@@ -197,7 +197,7 @@ detallesAInsertar.push({
                     url: _SERVER + 'check/', 
                     mail: transporterConfig, 
                     app: 'CHECK', 
-                    from: 'Check <check@planck.biz>',
+                    from: 'Check <adriruizvega@gmail.com>',
                     to: clienteID.correo, // 👈 IMPORTANTE: Aquí va el correo dinámico del cliente que compró
                     slogan: '😋 Comida exquisita, entregas simples. 🛵 Compra YA! 👇🏻',
                     body_bienvanida: 'Mensaje personalizado', 
