@@ -94,7 +94,7 @@ exports.update = (req, res) => {
 exports.BuscarNombre = async (req, res) => {
 
     try{
-    const nombre = req.params.nombre;
+    const nombre = req.params.BuscarNombre;
 
     const artista = await Artista.findOne({
             where: {

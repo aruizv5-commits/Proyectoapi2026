@@ -96,7 +96,7 @@ exports.update = (req, res) => {
 
 // Delete a Client with the specified id in the request
 exports.delete = (req, res) => {
-    const id = req.params.id_usuario;
+    const id = req.params.id;
     // utilizamos el metodo destroy para eliminar el objeto mandamos la condicionante where id = parametro que recibimos 
     Usuario.destroy({
         where: { id_usuario: id }

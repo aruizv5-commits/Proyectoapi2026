@@ -6,7 +6,7 @@ module.exports = app => {
     
     router.get("/", artista.findAll);
     
-    router.get("/nombre/:buscar", artista.BuscarNombre);
+    router.get("/nombre/:BuscarNombre", artista.BuscarNombre);
     router.get("/genero/:buscarGenero", artista.BuscarGeneroMusical);
     router.get("/pais/:BuscarPais", artista.BuscarPais);
 

@@ -1,44 +1,8 @@
 // importamos db los modelos en este caso si tenemos uno o mas, se puede referenciar db."nombreModelo".   
 const db = require("../models");
-const transporter = require("../config/mailer");
-const nodemailer = require('nodemailer');
-const { google } = require("googleapis");
-const OAuth2 = google.auth.OAuth2;
 const Detalle_ventas = db.d_ventas;
 const Op = db.Sequelize.Op;
 
-
-const accountTransport = require("../config/account_transport.json");
-
-
-
-const _SERVER = "http://localhost:8081"; 
-const _ID_APP_1 = 1;                      
-const head = "<div style='background:#333;color:#fff;padding:10px;'>Encabezado</div>";                          
-const footer = "<div style='font-size:12px;color:#777;'>Pie de página</div>";
-
-const mail_rover = async (idApp, callback) => {
-    const oauth2Client = new OAuth2(
-        accountTransport.auth.clientId,
-        accountTransport.auth.clientSecret,
-        "https://developers.google.com/oauthplayground",
-    );
-    oauth2Client.setCredentials({
-        refresh_token: accountTransport.auth.refreshToken,
-        tls: {
-            rejectUnauthorized: false
-        }
-    });
-    oauth2Client.getAccessToken((err, token) => {
-        if (err)
-            return console.log(err);;
-        accountTransport.auth.accessToken = token;
-        callback(nodemailer.createTransport(accountTransport));
-    });
-    if (typeof callback === 'function') {
-        callback(nodemailer.createTransport(accountTransport));
-    }
-};
 
 
 
@@ -182,58 +146,7 @@ detallesAInsertar.push({
 
         await ventaID.update({total_venta:Nuevototal});
 
-        //envia el piche correo
-       if (clienteID && clienteID.correo) {
-            
-            // Llamamos a tu función mail_rover pasándole el transporter
-            mail_rover(1, async (transporterConfig) => {
-                
-                // Aquí defines el ID de la app o de la configuración que necesites (ej: _ID_APP_1)
-                const idAppConfig = _ID_APP_1; 
-
-                // Si tu mail_rover espera recibir el id o ya lo maneja internamente:
-                // (Adaptado a la estructura JSON que regresa tu switch)
-                const jsonConfig = {
-                    url: _SERVER + 'check/', 
-                    mail: transporterConfig, 
-                    app: 'CHECK', 
-                    from: 'Check <adriruizvega@gmail.com>',
-                    to: clienteID.correo, // 👈 IMPORTANTE: Aquí va el correo dinámico del cliente que compró
-                    slogan: '😋 Cambio de mensaje slo para probar.',
-                    body_bienvanida: 'Mensaje personalizado', 
-                    head_bienvanida: 'cambio de mensaje para ver si funciona',
-                    bcc: 'Info <planck.biz@gmail.com>', 
-                    head: typeof head !== 'undefined' ? head : '', 
-                    footer: typeof footer !== 'undefined' ? footer : ''
-                };
-
-                const mailOptions = {
-                    from: jsonConfig.from,
-                    to: jsonConfig.to,
-                    bcc: jsonConfig.bcc,
-                    subject: "¡Confirmación de compra de boletos!",
-                    html: `
-                        <h2>¡Gracias por tu compra, ${clienteID.nombre || 'Cliente'}!</h2>
-                        <p>${jsonConfig.head_bienvanida}</p>
-                        <p>Tu transacción se ha procesado con éxito en nuestro sistema.</p>
-                        <p><b>Número de Venta:</b> #${ventaID.id_venta}</p>
-                        <p><b>Total General:</b> $${Totalgeneral}</p>
-                        <br>
-                        <p><i>${jsonConfig.slogan}</i></p>
-                        <p>¡Te esperamos en el evento!</p>
-                    `
-                };
-
-                try {
-                    await jsonConfig.mail.sendMail(mailOptions);
-                    console.log("Correo de confirmación enviado exitosamente mediante mail_rover.");
-                } catch (mailErr) {
-                    console.error("No se pudo enviar el correo con mail_rover, pero la venta se registró:", mailErr);
-                }
-            });
-        }
-
-    //aqui termina la operacion para el pinche correo y sigue las demas babosadas
+      
    return res.status(201).send(resultados);
 
     } catch (err) {
